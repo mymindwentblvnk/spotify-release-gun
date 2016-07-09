@@ -1,15 +1,36 @@
 from config import LAST_UPDATE_PATH
 import os.path
+import datetime
 
-def loadLastUpdate():
-    # If file already exists
-    if os.path.exists(LAST_UPDATE_PATH):
-        file = open(LAST_UPDATE_PATH, "r")
-    else:
-        pass
-
-def saveLastUpdate():
-    pass
+DATE_FORMAT = "%Y-%m-%d"
 
 def getLastUpdate():
-    return False
+
+    date = None
+
+    # If file already exists
+    if os.path.exists(LAST_UPDATE_PATH):
+        # Load and return date in file
+        file = open(LAST_UPDATE_PATH, "r")
+        date = file.readline()
+    else:
+        # If not create file with "today - one week"
+        file = open(LAST_UPDATE_PATH, "w")
+
+        today = datetime.datetime.now()
+        sevenDays = datetime.timedelta(days=7)
+        todayMinusSeven = today - sevenDays
+        date = todayMinusSeven.strftime(DATE_FORMAT)
+
+        saveLastUpdate(date)
+
+    return date.rstrip()
+
+def saveLastUpdate(date=None):
+    if date == None:
+        today = datetime.datetime.now()
+        date = today.strftime(DATE_FORMAT)
+
+    file = open(LAST_UPDATE_PATH, "w")
+    file.write(date)
+    return date

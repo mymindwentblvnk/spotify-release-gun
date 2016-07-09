@@ -1,6 +1,7 @@
 import spotipy
 import spotipy.util as util
-from util import getLastUpdate
+from util import getLastUpdate, DATE_FORMAT, saveLastUpdate
+import time
 
 
 class Spotify():
@@ -79,9 +80,11 @@ class Spotify():
             albums = self.getAlbums(artist, spotifyMarket)
 
             filteredAlbums = list(filter(self.__albumAfterLastUpdateFilter, albums))
-            # with filter() https://infohost.nmt.edu/tcc/help/pubs/python/web/filter-function.html
 
-            result = result + albums
+            result = result + filteredAlbums
+
+        # Save this date as last update date
+        saveLastUpdate()
 
         return result
 
@@ -92,14 +95,26 @@ class Spotify():
         :param spotifyRelease: Object to check.
         :return: Boolean stating if object is younger than the last update date.
         """
+        format = DATE_FORMAT
+
         lastUpdate = getLastUpdate()
-        return False
+        releaseDate = spotifyRelease.releaseDate
+
+        lastUpdateDate = time.strptime(lastUpdate, format)
+        try:
+            # If release date is in YYYY-mm-dd format
+            releaseDateDate = time.strptime(releaseDate, format)
+        except ValueError:
+            # If release date is in YYYY format
+            releaseDateDate = time.strptime("%s-01-01" % (releaseDate), format)
+
+        return releaseDateDate >= lastUpdateDate
 
 
     def getAlbums(self, artist, spotifyMarket):
         """
         Gets you all albums from an artist on a Spotify market
-        :param artistId: Id of the artist you want to have the albums from
+        :param artist: SpotifyArtist object of the artist you want to have the albums from
         :param spotifyMarket: The Spotify market which the resulting albums should be available in
         :return: List of all albums, singles and appearances of an artist in a market
         """
