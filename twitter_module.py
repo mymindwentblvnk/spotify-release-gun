@@ -1,11 +1,18 @@
 from twython import Twython
-from config import APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET
+
 
 class TwitterAdapter:
     """
     A class that connects you to your Twitter account and posts a list of RedditSubmission objects.
     """
-    __t = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+    __t = None
+
+    def __init__(self, user):
+        appKey = user.APP_KEY
+        appSecret = user.APP_SECRET
+        oauthToken = user.OAUTH_TOKEN
+        oauthTokenSecret = user.OAUTH_TOKEN_SECRET
+        self.__t = Twython(appKey, appSecret, oauthToken, oauthTokenSecret)
 
     def tweetList(self, items):
         """
@@ -20,6 +27,10 @@ class TwitterAdapter:
         Tweets on your timeline
         :param item: Has to have a toTwitterString method
         """
-        status = item.toTwitterString()
         twitter = self.__t
-        twitter.update_status(status=status[:140])
+
+        try:
+            status = item.toTwitterString()
+            twitter.update_status(status=status[:140])
+        except:
+            twitter.update_status(status=item[:140])
