@@ -10,3 +10,6 @@ def loadLastUpdate():
 
 def saveLastUpdate():
     pass
+
+def getLastUpdate():
+    return False

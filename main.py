@@ -1,7 +1,10 @@
 from spotipy_module import *
-from config import getUser
+from config import *
 
-user = getUser()
+user = User()
 s = Spotify(user)
-#result = s.getAllNewReleases()
-print(len(s.getFollowedArtistsOfUser()))
+#list = s.getAlbums("0b2XeWDPeBiLeskT6RFqMb", "DE")
+result = s.getAllNewReleases()
+#print(len(s.getFollowedArtistsOfUser()))
+print(len(result))
+
