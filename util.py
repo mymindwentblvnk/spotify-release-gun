@@ -27,9 +27,12 @@ def getLastUpdate():
     return date.rstrip()
 
 def saveLastUpdate(date=None):
+    # Save the next day
     if date == None:
         today = datetime.datetime.now()
-        date = today.strftime(DATE_FORMAT)
+        oneDay = datetime.timedelta(days=1)
+        todayPlusOne = today + oneDay
+        date = todayPlusOne.strftime(DATE_FORMAT)
 
     file = open(LAST_UPDATE_PATH, "w")
     file.write(date)

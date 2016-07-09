@@ -29,8 +29,5 @@ class TwitterAdapter:
         """
         twitter = self.__t
 
-        try:
-            status = item.toTwitterString()
-            twitter.update_status(status=status[:140])
-        except:
-            twitter.update_status(status=item[:140])
+        status = item.toTwitterString()
+        twitter.update_status(status=status[:140])

@@ -1,6 +1,7 @@
 from spotipy_module import *
 from config import *
 from twitter_module import TwitterAdapter
+from util import saveLastUpdate
 
 def tweetNewReleases():
     user = SpotifyUser()
@@ -10,3 +11,9 @@ def tweetNewReleases():
     user = TwitterUser()
     twitter = TwitterAdapter(user)
     twitter.tweetList(result)
+
+    # LOGGING
+    print("%s Tweets sent." % (len(result)))
+
+    # Save date
+    saveLastUpdate()

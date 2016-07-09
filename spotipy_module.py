@@ -1,7 +1,7 @@
 import spotipy
 import spotipy.util as util
 from util import getLastUpdate, DATE_FORMAT, saveLastUpdate
-import time
+from datetime import datetime
 
 class SpotifyRelease():
     """
@@ -219,19 +219,22 @@ class Spotify():
         """
         format = DATE_FORMAT
 
-        lastUpdate = getLastUpdate()
-        releaseDate = spotifyRelease.releaseDate
+        lastUpdateString = getLastUpdate()
+        lastUpdateDate = datetime.strptime(lastUpdateString, format)
 
-        lastUpdateDate = time.strptime(lastUpdate, format)
+        releaseDateString = spotifyRelease.releaseDate
         try:
             # If release date is in YYYY-mm-dd format
-            releaseDateDate = time.strptime(releaseDate, format)
+            releaseDate = datetime.strptime(releaseDateString, format)
         except ValueError:
             # If release date is in YYYY format
-            releaseDateDate = time.strptime("%s-01-01" % (releaseDate), format)
+            releaseDate = datetime.strptime("%s-01-01" % (releaseDateString), format)
 
-        return releaseDateDate >= lastUpdateDate
+        # Today
+        today = datetime.today()
+        today = today.replace(hour=0, minute=0, second=0, microsecond=0)
 
+        return releaseDate >= lastUpdateDate and releaseDate <= today
 
     def getAllNewReleases(self):
         """
@@ -252,8 +255,5 @@ class Spotify():
             filteredAlbums = list(filter(self.__albumAfterLastUpdateFilter, albums))
 
             result = result + filteredAlbums
-
-        # Save this date as last update date
-        saveLastUpdate()
 
         return result
