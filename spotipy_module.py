@@ -116,34 +116,41 @@ class Spotify():
         Gets you all albums from an artist on a Spotify market
         :param artist: SpotifyArtist object of the artist you want to have the albums from
         :param spotifyMarket: The Spotify market which the resulting albums should be available in
-        :return: List of all albums, singles and appearances of an artist in a market
+        :param withAppearsOn: Decide if you want to receive the appearances too
+        :return: List of all albums, singles and sometimes appearances of an artist in a market
         """
 
         # LOGGING
         print("Get albums from %s" % (artist.name))
 
-        albumResult = self.get10LatestAlbumsForArtistOnMarketByType(artist.id, spotifyMarket, "album")
-        singleResult = self.get10LatestAlbumsForArtistOnMarketByType(artist.id, spotifyMarket, "single")
-        if withAppearsOn:
-            appearsOnResult = self.get10LatestAlbumsForArtistOnMarketByType(artist.id, spotifyMarket, "appears_on")
+        albumResult = self.getNLatestAlbumsForArtistOnMarketByType(artist.id, market=spotifyMarket, type="album")
+        result = albumResult
 
-        result = albumResult + singleResult + appearsOnResult
+        singleResult = self.getNLatestAlbumsForArtistOnMarketByType(artist.id, market=spotifyMarket, type="single")
+        result = result + singleResult
+
+
+        if withAppearsOn:
+            appearsOnResult = self.getNLatestAlbumsForArtistOnMarketByType(artist.id, market=spotifyMarket, type="appears_on")
+            result = result + appearsOnResult
+
         return result
 
 
-    def get10LatestAlbumsForArtistOnMarketByType(self, artistId, spotifyMarket, type):
+    def getNLatestAlbumsForArtistOnMarketByType(self, artistId, market="DE", type=type, limit=10):
         """
-        Gets you the latest 10 albums for an artist depending on album type (album, single, appears on) and the market you are looking for
+        Gets you the latest n albums for an artist depending on album type (album, single, appears on) and the market you are looking for
         :param artistId: Id of the artist you want to look up
-        :param spotifyMarket: Market you are watching
+        :param market: Market you are watching
         :param type: Album type
+        :param limit: Limit of Albums between 0 and 20
         :return: List of all albums of a specific type from an artist
         """
         spotify = self.__s
 
         result = []
 
-        albumResult = spotify.artist_albums(artistId, limit=10, album_type=type, country=spotifyMarket)
+        albumResult = spotify.artist_albums(artistId, limit=limit, album_type=type, country=market)
         albums = albumResult["items"]
 
         # If next set of albums is empty then stop the album loop
@@ -200,7 +207,7 @@ class Spotify():
         album = spotify.album(album_id=albumId)
         result = SpotifyRelease()
         result.id = album["id"]
-        result.artist = album["artists"][0]["name"]
+        result.artist = album["artists"][0]["name"] #TODO All artists
         result.type = album["type"]
         result.releaseDate = album["release_date"]
         result.title = album["name"]
@@ -221,6 +228,16 @@ class SpotifyRelease():
     type = None
     availableMarkets = None
     releaseDate = None
+
+    def toTwitterString(self):
+        artistString = self.artist
+        titleString = self.title
+        linkString = self.link
+
+        restLen = 130 - len(linkString) - len(artistString)
+        titleString = titleString[:restLen]
+
+        return "%s - %s %s" % (artistString, titleString, linkString)
 
 
 class SpotifyArtist():

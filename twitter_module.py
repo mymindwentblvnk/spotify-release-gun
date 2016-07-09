@@ -7,12 +7,19 @@ class TwitterAdapter:
     """
     __t = Twython(APP_KEY, APP_SECRET, OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
 
-    def postStatusList(self, submissions):
+    def tweetList(self, items):
         """
         Iterates over a list of RedditSubmission objects and posts them to your Twitter timeline.
         :param submissions: List of RedditSubmission objects.
         """
+        for item in items:
+            self.tweet(item)
 
-        for submission in submissions:
-            status = submission.get140Characters()
-            self.__t.update_status(status=status)
+    def tweet(self, item):
+        """
+        Tweets on your timeline
+        :param item: Has to have a toTwitterString method
+        """
+        status = item.toTwitterString()
+        twitter = self.__t
+        twitter.update_status(status=status[:140])
