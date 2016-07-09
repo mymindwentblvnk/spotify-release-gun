@@ -1,3 +1,5 @@
+# Please rename this file to config.py and add the API information below (Twitter and Spotify)
+
 # Spotify config information
 class SpotifyUser():
     SPOTIFY_MARKET="DE"
