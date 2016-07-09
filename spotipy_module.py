@@ -111,7 +111,7 @@ class Spotify():
         return releaseDateDate >= lastUpdateDate
 
 
-    def getAlbums(self, artist, spotifyMarket):
+    def getAlbums(self, artist, spotifyMarket, withAppearsOn=False):
         """
         Gets you all albums from an artist on a Spotify market
         :param artist: SpotifyArtist object of the artist you want to have the albums from
@@ -124,7 +124,8 @@ class Spotify():
 
         albumResult = self.get10LatestAlbumsForArtistOnMarketByType(artist.id, spotifyMarket, "album")
         singleResult = self.get10LatestAlbumsForArtistOnMarketByType(artist.id, spotifyMarket, "single")
-        appearsOnResult = self.get10LatestAlbumsForArtistOnMarketByType(artist.id, spotifyMarket, "appears_on")
+        if withAppearsOn:
+            appearsOnResult = self.get10LatestAlbumsForArtistOnMarketByType(artist.id, spotifyMarket, "appears_on")
 
         result = albumResult + singleResult + appearsOnResult
         return result
