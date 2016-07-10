@@ -1,8 +1,7 @@
 # SpotifyNotificationTweeter
 A Python 3.5 script that tweets about new releases of artists that you follow.
 
-## What it does
-This is a python script that 
+## What it does 
 1. Logs on to your Spotify account (via Web-API [https://developer.spotify.com/web-api/](https://developer.spotify.com/web-api/) using [spotipy](https://spotipy.readthedocs.io/en/latest/).
 2. Gets all your followed artists.
 3. Gets for all those artists the latest n albums, singles or appearances.
