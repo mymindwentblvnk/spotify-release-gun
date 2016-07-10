@@ -2,10 +2,10 @@
 A Python 3.5 script that tweets about new releases of artists that you follow.
 
 ## What it does 
-1. Logs on to your Spotify account (via Web-API [https://developer.spotify.com/web-api/](https://developer.spotify.com/web-api/) using [spotipy](https://spotipy.readthedocs.io/en/latest/).
+1. Logs on to your Spotify account (via Web-API [https://developer.spotify.com/web-api/](https://developer.spotify.com/web-api/) using [spotipy](https://spotipy.readthedocs.io/en/latest/)).
 2. Gets all your followed artists.
 3. Gets for all those artists the latest n albums, singles or appearances.
-4. Checks if there are new albums for an artist since the last time he checked (last update is saved in an external file).
+4. Checks if there are new albums for an artist since the last time it checked (last update is saved in an external file).
 5. Tweets about all new releases since the last update (using [Twython](https://twython.readthedocs.io/en/latest/)).
 
 ## If you want to use it
