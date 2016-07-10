@@ -1,6 +1,7 @@
 from config import LAST_UPDATE_PATH
 import os.path
 import datetime
+from config import LOGGING_ON
 
 DATE_FORMAT = "%Y-%m-%d"
 
@@ -37,3 +38,11 @@ def saveLastUpdate(date=None):
     file = open(LAST_UPDATE_PATH, "w")
     file.write(date)
     return date
+
+def log(message):
+    """
+    Logs a message to the console if LOGGING_ON is set true
+    :param message: Message to log
+    """
+    if LOGGING_ON:
+        print(message)

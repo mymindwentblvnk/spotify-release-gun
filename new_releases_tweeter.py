@@ -13,7 +13,7 @@ def tweetNewReleases():
     twitter.tweetList(result)
 
     # LOGGING
-    print("%s Tweets sent." % (len(result)))
+    print("%s Tweet(s) sent." % (len(result)))
 
     # Save date
     saveLastUpdate()

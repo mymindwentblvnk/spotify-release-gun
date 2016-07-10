@@ -1,4 +1,5 @@
 from twython import Twython
+from util import log
 
 
 class TwitterAdapter:
@@ -34,4 +35,4 @@ class TwitterAdapter:
             twitter.update_status(status=status[:140])
         except:
             # LOGGING
-            print("\"%s\" could not be tweeted." % (status))
+            log("\"%s\" could not be tweeted." % (status))

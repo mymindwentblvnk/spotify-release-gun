@@ -2,6 +2,7 @@ import spotipy
 import spotipy.util as util
 from util import getLastUpdate, DATE_FORMAT, saveLastUpdate
 from datetime import datetime
+from util import log
 
 class SpotifyRelease():
     """
@@ -156,14 +157,13 @@ class Spotify():
         limit = self.__user.NUMBER_OF_RELEASES_TO_LOOK_IN
 
         # LOGGING
-        print("Get albums from %s" % (artist.name))
+        log("Get albums from %s" % (artist.name))
 
         albumResult = self.getNLatestAlbumsForArtistOnMarketByType(artist.id, market=spotifyMarket, type="album", limit=limit)
         result = albumResult
 
         singleResult = self.getNLatestAlbumsForArtistOnMarketByType(artist.id, market=spotifyMarket, type="single", limit=limit)
         result = result + singleResult
-
 
         if withAppearsOn:
             appearsOnResult = self.getNLatestAlbumsForArtistOnMarketByType(artist.id, market=spotifyMarket, type="appears_on", limit=limit)
@@ -198,9 +198,6 @@ class Spotify():
                     # Remember last artist
                     lastArtistId = artist["id"]
 
-                    # LOGGING
-                    print("Artist %s found" % (artist["name"]))
-
                     # Create SpotifyArtist
                     spotifyArtist = SpotifyArtist()
                     spotifyArtist.id = artist["id"]
@@ -208,6 +205,10 @@ class Spotify():
 
                     # Append to result
                     result.append(spotifyArtist)
+
+        # LOGGING
+        log("%s artist found" % (len(result)))
+
         return result
 
 
@@ -230,11 +231,7 @@ class Spotify():
             # If release date is in YYYY format
             releaseDate = datetime.strptime("%s-01-01" % (releaseDateString), format)
 
-        # Today
-        today = datetime.today()
-        today = today.replace(hour=0, minute=0, second=0, microsecond=0)
-
-        return releaseDate >= lastUpdateDate and releaseDate <= today
+        return releaseDate >= lastUpdateDate
 
     def getAllNewReleases(self):
         """
@@ -250,10 +247,11 @@ class Spotify():
 
         # For every artist the user is following
         for artist in artists:
+            # Get the albums
             albums = self.getAlbums(artist, spotifyMarket)
-
+            # Filter them
             filteredAlbums = list(filter(self.__albumAfterLastUpdateFilter, albums))
-
+            # and append to the result
             result = result + filteredAlbums
 
         return result
