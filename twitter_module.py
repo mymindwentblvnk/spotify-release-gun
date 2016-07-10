@@ -3,7 +3,7 @@ from twython import Twython
 
 class TwitterAdapter:
     """
-    A class that connects you to your Twitter account and posts a list of RedditSubmission objects.
+    A class that connects you to your Twitter account and posts a list of items with a toTwitterString method.
     """
     __t = None
 
@@ -30,4 +30,8 @@ class TwitterAdapter:
         twitter = self.__t
 
         status = item.toTwitterString()
-        twitter.update_status(status=status[:140])
+        try:
+            twitter.update_status(status=status[:140])
+        except:
+            # LOGGING
+            print("\"%s\" could not be tweeted." % (status))

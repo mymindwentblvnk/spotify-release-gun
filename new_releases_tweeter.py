@@ -1,4 +1,4 @@
-from spotipy_module import *
+from spotify_module import *
 from config import *
 from twitter_module import TwitterAdapter
 from util import saveLastUpdate
