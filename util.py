@@ -5,7 +5,8 @@ from config import LOGGING_ON
 
 DATE_FORMAT = "%Y-%m-%d"
 
-def getLastUpdate():
+
+def get_last_update():
 
     date = None
 
@@ -23,13 +24,14 @@ def getLastUpdate():
         todayMinusSeven = today - sevenDays
         date = todayMinusSeven.strftime(DATE_FORMAT)
 
-        saveLastUpdate(date)
+        save_last_update(date)
 
     return date.rstrip()
 
-def saveLastUpdate(date=None):
+
+def save_last_update(date=None):
     # Save the next day
-    if date == None:
+    if date is None:
         today = datetime.datetime.now()
         oneDay = datetime.timedelta(days=1)
         todayPlusOne = today + oneDay
@@ -38,6 +40,7 @@ def saveLastUpdate(date=None):
     file = open(LAST_UPDATE_PATH, "w")
     file.write(date)
     return date
+
 
 def log(message):
     """

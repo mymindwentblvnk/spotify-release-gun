@@ -1,2 +1,2 @@
-from new_releases_tweeter import tweetNewReleases
-tweetNewReleases()
+from new_releases_tweeter import tweet_new_releases
+tweet_new_releases()

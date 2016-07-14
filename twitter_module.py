@@ -4,7 +4,8 @@ from util import log
 
 class TwitterAdapter:
     """
-    A class that connects you to your Twitter account and posts a list of items with a toTwitterString method.
+    A class that connects you to your Twitter account and posts a list of items
+    with a to_twitter_string method.
     """
     __t = None
 
@@ -15,10 +16,10 @@ class TwitterAdapter:
         oauthTokenSecret = user.OAUTH_TOKEN_SECRET
         self.__t = Twython(appKey, appSecret, oauthToken, oauthTokenSecret)
 
-    def tweetList(self, items):
+    def tweet_list(self, items):
         """
-        Iterates over a list of RedditSubmission objects and posts them to your Twitter timeline.
-        :param submissions: List of RedditSubmission objects.
+        Iterates over a list of items  and posts them to your Twitter timeline.
+        :param submissions: List of items objects.
         """
         for item in items:
             self.tweet(item)
@@ -30,7 +31,7 @@ class TwitterAdapter:
         """
         twitter = self.__t
 
-        status = item.toTwitterString()
+        status = item.to_twitter_string()
         try:
             twitter.update_status(status=status[:140])
         except:
