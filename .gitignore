@@ -2,6 +2,6 @@ config.py
 __pycache__/
 .cache-*
 .idea
-.lastUpdateDate
+.last_update_date
 playground.py
 .twitter_cache
