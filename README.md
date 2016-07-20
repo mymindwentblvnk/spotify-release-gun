@@ -12,7 +12,7 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 1. Clone/download repository.
 2. Use Python 3.5.
 3. Install missing python modules ([Twython](https://twython.readthedocs.io/en/latest/) and [spotipy](https://spotipy.readthedocs.io/en/latest/)).
-4. Rename `rename_to_config.py` to `config.py` and enter the missing API information (Twitter and Spotify)
+4. Rename `rename_to_config.py` to `config.py` and enter the missing API information (Twitter and Spotify).
 5. Run `main.py` with Python 3.5.
 
 ## Is using

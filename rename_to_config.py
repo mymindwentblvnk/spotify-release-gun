@@ -16,10 +16,6 @@ class SpotifyUser():
     SPOTIFY_REDIRECT_URI = ""
     SPOTIFY_USER_NAME = ""
 
-# Path to last update file
-LAST_UPDATE_PATH = ".lastUpdateDate"
-
-
 class TwitterUser():
     """
     Twitter user information.
@@ -30,3 +26,10 @@ class TwitterUser():
     APP_SECRET = ""
     OAUTH_TOKEN = ""
     OAUTH_TOKEN_SECRET = ""
+
+# Path to last update file
+LAST_UPDATE_PATH = ".last_update_date"
+# Path to the twitter_cache file
+SPOTIFY_CACHE_PATH = ".twitter_cache"
+# Turn logging on/off
+LOGGING_ON = True

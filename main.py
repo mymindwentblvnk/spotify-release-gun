@@ -1,2 +1,4 @@
-from new_releases_tweeter import tweet_new_releases
-tweet_new_releases()
+from spotify_notification_tweeter import SpotifyNotificationTweeter
+
+# Process
+SpotifyNotificationTweeter().tweet_new_releases()

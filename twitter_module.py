@@ -1,8 +1,7 @@
 from twython import Twython
-from util import log
+from the_logger import log
 
-
-class TwitterAdapter:
+class Twitter:
     """
     A class that connects you to your Twitter account and posts a list of items
     with a to_twitter_string method.
@@ -10,30 +9,34 @@ class TwitterAdapter:
     __t = None
 
     def __init__(self, user):
-        appKey = user.APP_KEY
-        appSecret = user.APP_SECRET
-        oauthToken = user.OAUTH_TOKEN
-        oauthTokenSecret = user.OAUTH_TOKEN_SECRET
-        self.__t = Twython(appKey, appSecret, oauthToken, oauthTokenSecret)
+        app_key = user.APP_KEY
+        app_secret = user.APP_SECRET
+        oauth_token = user.OAUTH_TOKEN
+        oauth_token_secret = user.OAUTH_TOKEN_SECRET
+        self.__t = Twython(
+                app_key, app_secret, oauth_token, oauth_token_secret)
 
-    def tweet_list(self, items):
+    def tweet_list(self, status_list):
         """
-        Iterates over a list of items  and posts them to your Twitter timeline.
-        :param submissions: List of items objects.
+        Iterates over a list of status strings and posts them to your Twitter
+        timeline.
+        :param status_list: List of status strings.
         """
-        for item in items:
-            self.tweet(item)
+        for status in status_list:
+            self.tweet(status)
 
-    def tweet(self, item):
+        # LOGGING
+        log("%s Tweet(s) sent." % (len(status_list)))
+
+    def tweet(self, status):
         """
-        Tweets on your timeline
-        :param item: Has to have a toTwitterString method
+        Tweets a status on your timeline
+        :param status: String to tweet.
         """
         twitter = self.__t
 
-        status = item.to_twitter_string()
         try:
             twitter.update_status(status=status[:140])
         except:
             # LOGGING
-            log("\"%s\" could not be tweeted." % (status))
+            log("Could not be tweeted: %s" % (status))

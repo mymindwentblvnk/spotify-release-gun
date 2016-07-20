@@ -1,8 +1,8 @@
 import spotipy
 import spotipy.util as util
-from util import get_last_update, DATE_FORMAT, save_last_update
+from file_operations import get_last_update, DATE_FORMAT, save_last_update
 from datetime import datetime
-from util import log
+from the_logger import log
 
 
 class SpotifyRelease():
@@ -15,15 +15,15 @@ class SpotifyRelease():
     artists = None
     title = None
     type = None
-    releaseDate = None
+    release_date = None
 
-    def __init__(self, id=None, artists=None, type=None, releaseDate=None,
+    def __init__(self, id=None, artists=None, type=None, release_date=None,
                  title=None, link=None):
         self.id = id
         self.link = link
         self.title = title
         self.type = type
-        self.releaseDate = releaseDate
+        self.release_date = release_date
         self.artists = artists
         self.artist = artists[0]["name"]
 
@@ -32,8 +32,8 @@ class SpotifyRelease():
         title = self.title
         link = self.link
 
-        restLen = 130 - len(link) - len(artist)
-        title = title[:restLen]
+        rest_len = 130 - len(link) - len(artist)
+        title = title[:rest_len]
 
         return "%s - %s %s" % (artist, title, link)
 
@@ -65,6 +65,7 @@ class Spotify():
 
         self.__s = spotipy.Spotify(auth=token)
 
+
     def get_full_album(self, albumId):
         """
         Returns the full album information for a given album id
@@ -77,16 +78,16 @@ class Spotify():
                 id=album["id"],
                 artists=album["artists"],
                 type=album["type"],
-                releaseDate=album["release_date"],
+                release_date=album["release_date"],
                 title=album["name"],
                 link=album["external_urls"]["spotify"]
             )
         return result
 
-    def get_n_latest_albums_for_artist_on_market_by_type(self, artistId,
-                                                         market="DE",
-                                                         type=type,
-                                                         limit=10):
+    def get_n_latest_albums_for_artist_by_type(self, artistId,
+                                               market="DE",
+                                               type=type,
+                                               limit=10):
         """
         Gets you the latest n albums for an artist depending on album type
         (album, single, appears on) and the market you are looking for
@@ -115,51 +116,14 @@ class Spotify():
 
         return result
 
-    def get_all_albums_for_artist_on_market_by_type(self, artistId,
-                                                    spotifyMarket, type):
-        """
-        Gets you all albums for an artist depending on album type
-                (album, single, appears on) and the market you are looking for
-        :param artistId: Id of the artist you want to look up
-        :param spotifyMarket: Market you are watching
-        :param type: Album type
-        :return: List of all albums of a specific type from an artist
-        """
-        spotify = self.__s
-
-        result = []
-        process = True
-        offset = 0
-
-        # loop
-        while process:
-            albumResult = spotify.artist_albums(artistId, album_type=type,
-                                                country=spotifyMarket,
-                                                offset=offset)
-            albums = albumResult["items"]
-
-            offset += len(albums)
-
-            # If next set of albums is empty then stop the album loop
-            if len(albums) == 0:
-                process = False
-            else:
-                # Iterate over next album set and append the found albums
-                for album in albums:
-                    resultAlbum = self.get_full_album(album["id"])
-                    result.append(resultAlbum)
-        # end loop
-
-        return result
-
-    def get_albums(self, artist, spotifyMarket, withAppearsOn=False):
+    def get_albums(self, artist, spotify_market, with_appears_on=False):
         """
         Gets you all albums from an artist on a Spotify market
         :param artist: SpotifyArtist object of the artist you want to have the
                 albums from
-        :param spotifyMarket: The Spotify market which the resulting albums
+        :param spotify_market: The Spotify market which the resulting albums
                 should be available in
-        :param withAppearsOn: Decide if you want to receive the appearances too
+        :param with_appears_on: Decide if you want to receive the appearances too
         :return: List of all albums, singles and sometimes appearances of an
                 artist in a market
         """
@@ -169,17 +133,18 @@ class Spotify():
         # LOGGING
         log("Get albums from %s" % (artist.name))
 
-        albumResult = self.get_n_latest_albums_for_artist_on_market_by_type(
-                artist.id, market=spotifyMarket, type="album", limit=limit)
+        albumResult = self.get_n_latest_albums_for_artist_by_type(
+                artist.id, market=spotify_market, type="album", limit=limit)
         result = albumResult
 
-        singleResult = self.get_n_latest_albums_for_artist_on_market_by_type(
-                artist.id, market=spotifyMarket, type="single", limit=limit)
+        singleResult = self.get_n_latest_albums_for_artist_by_type(
+                artist.id, market=spotify_market, type="single", limit=limit)
         result = result + singleResult
 
-        if withAppearsOn:
-            appearsOnResult = self.get_n_latest_albums_for_artist_on_market_by_type(
-                    artist.id, market=spotifyMarket, type="appears_on", limit=limit)
+        if with_appears_on:
+            appearsOnResult = self.get_n_latest_albums_for_artist_by_type(
+                    artist.id, market=spotify_market,
+                    type="appears_on", limit=limit)
             result = result + appearsOnResult
 
         return result
@@ -193,14 +158,14 @@ class Spotify():
         result = []
 
         process = True
-        lastArtistId = None
+        last_artist_id = None
 
         # Do while there are more followed artists
         while process:
 
             # Get next n artists
-            artistResult = spotify.current_user_followed_artists(50,
-                                                                 lastArtistId)
+            artistResult = spotify.current_user_followed_artists(
+                    50, last_artist_id)
             artists = artistResult["artists"]["items"]
 
             if len(artists) == 0:
@@ -209,7 +174,7 @@ class Spotify():
                 # Iterate over next 20 artists
                 for i, artist in enumerate(artists):
                     # Remember last artist
-                    lastArtistId = artist["id"]
+                    last_artist_id = artist["id"]
 
                     # Create SpotifyArtist
                     spotifyArtist = SpotifyArtist()
@@ -224,38 +189,38 @@ class Spotify():
 
         return result
 
-    def __album_after_last_update_filter(self, spotifyRelease):
-        """
-        A filter method for filtering Spotify releases out, that are not
-        younger than the last update date.
-        :param spotifyRelease: Object to check.
-        :return: Boolean stating if object is younger than the last
-                update date.
-        """
-        format = DATE_FORMAT
-
-        lastUpdateString = get_last_update()
-        lastUpdateDate = datetime.strptime(lastUpdateString, format)
-
-        releaseDateString = spotifyRelease.releaseDate
-        try:
-            # If release date is in YYYY-mm-dd format
-            releaseDate = datetime.strptime(releaseDateString, format)
-        except ValueError:
-            # If release date is in YYYY format
-            releaseDate = datetime.strptime("%s-01-01" % (releaseDateString),
-                                            format)
-
-        return releaseDate >= lastUpdateDate
-
     def get_all_new_releases(self):
         """
         Loads all new releases since the last time
         :return: List of SpotifyRelease objects
         """
 
+        def album_after_last_update_filter(spotifyRelease):
+            """
+            A filter method for filtering Spotify releases out, that are not
+            younger than the last update date.
+            :param spotifyRelease: Object to check.
+            :return: Boolean stating if object is younger than the last
+                    update date.
+            """
+            format = DATE_FORMAT
+
+            last_update_string = get_last_update()
+            last_update_date = datetime.strptime(last_update_string, format)
+
+            release_date_string = spotifyRelease.release_date
+            try:
+                # If release date is in YYYY-mm-dd format
+                release_date = datetime.strptime(release_date_string, format)
+            except ValueError:
+                # If release date is in YYYY format
+                release_date = datetime.strptime(
+                    "%s-01-01" % (release_date_string), format)
+
+            return release_date >= last_update_date
+
         result = []
-        spotifyMarket = self.__user.SPOTIFY_MARKET
+        spotify_market = self.__user.SPOTIFY_MARKET
 
         # Load artists
         artists = self.get_followed_artists_of_user()
@@ -263,11 +228,12 @@ class Spotify():
         # For every artist the user is following
         for artist in artists:
             # Get the albums
-            albums = self.get_albums(artist, spotifyMarket)
+            albums = self.get_albums(artist, spotify_market)
             # Filter them
-            filteredAlbums = list(filter(self.__album_after_last_update_filter,
-                                         albums))
+            filtered_albums = list(
+                filter(album_after_last_update_filter, albums)
+            )
             # and append to the result
-            result = result + filteredAlbums
+            result = result + filtered_albums
 
         return result
