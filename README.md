@@ -21,7 +21,6 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 
 ## Todo
 * Log to a file.
-* Remember already sent tweets (because some albums do have due to a bug a release date in the future leading to one tweet every day).
 * Tutorial on how to run the script on a Raspberry Pi with [crontab](https://www.raspberrypi.org/documentation/linux/usage/cron.md)
 * Long-term test to check for special cases which are not dealt with right now.
 * Code optimization.
