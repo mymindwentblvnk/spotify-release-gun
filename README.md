@@ -16,7 +16,7 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 5. Run `main.py` with Python 3.5.
 
 ## Run it daily on your Raspberry Pi
-6. Install git on your Pi and follow the above steps. 
+6. Install git on your Pi and follow the steps above (_If you want to use it_). 
 7. Run the script once manually, so the Spotipy cache can be generated.
 8. Now we define a cronjob (https://www.raspberrypi.org/documentation/linux/usage/cron.md) and schedule the script every night.
   1. Open the terminal (`STRG + ALT + T`)
