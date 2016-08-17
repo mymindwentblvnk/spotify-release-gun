@@ -11,7 +11,7 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 ## If you want to use it
 1. Clone/download repository.
 2. Use Python 3.5.
-3. Install missing python modules ([Twython](https://twython.readthedocs.io/en/latest/) and [spotipy](https://spotipy.readthedocs.io/en/latest/)).
+3. Install missing python modules ([Twython](https://twython.readthedocs.io/en/latest/) and [Spotipy](https://spotipy.readthedocs.io/en/latest/)).
 4. Rename `rename_to_config.py` to `config.py` and enter the missing API information (Twitter and Spotify).
 5. Run `main.py` with Python 3.5.
 
@@ -26,10 +26,8 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 9. The SpotifyNotificationTweeter will now run every night at 1 AM. The `cd`command was necessary for me, because otherwise the cronjob cannot find the Spotipy cache.
 
 ## Is using
-* spotipy [http://spotipy.readthedocs.io/en/latest/](https://spotipy.readthedocs.io/en/latest/)
+* Spotipy [http://spotipy.readthedocs.io/en/latest/](https://spotipy.readthedocs.io/en/latest/)
 * Twython [https://twython.readthedocs.io/en/latest/](https://twython.readthedocs.io/en/latest/)
-
-
 
 ## Todo
 * Log to a file.
