@@ -21,9 +21,9 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 8. Now we define a cronjob (https://www.raspberrypi.org/documentation/linux/usage/cron.md) and schedule the script every night.
   1. Open the terminal (`STRG + ALT + T`)
   2. `crontab -e`
-  3. And make this entry: `0 1 * * * cd /home/pi/scripts/SpotifyNotificationTweeter/ && python3.4 main.py > /home/pi/logs/snt.log`
+  3. And make this entry: `0 1 * * * cd /home/pi/scripts/SpotifyNotificationTweeter/ && python3.4 main.py > /home/pi/logs/snt.log`. The `cd`command was necessary for me, because otherwise the cronjob cannot find the Spotipy cache.
   4. Save and close.
-9. The SpotifyNotificationTweeter will now run every night at 1 AM. The `cd`command was necessary for me, because otherwise the cronjob cannot find the Spotipy cache.
+9. The SpotifyNotificationTweeter will now run every night at 1 AM. 
 
 ## Is using
 * Spotipy [http://spotipy.readthedocs.io/en/latest/](https://spotipy.readthedocs.io/en/latest/)
