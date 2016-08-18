@@ -24,9 +24,8 @@ class Twitter:
         """
         for status in status_list:
             self.tweet(status)
-
-        # LOGGING
-        log("%s Tweet(s) sent." % (len(status_list)))
+            # LOGGING
+            log("Status \"%s\" tweeted." % (status))
 
     def tweet(self, status):
         """

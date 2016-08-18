@@ -38,6 +38,8 @@ class SpotifyNotificationTweeter:
 
         # Filter all new releases by already tweeted releases
         filtered_result =  list(filter(already_tweeted_filter, result))
+        # LOG
+        log("%s new releases found." % (len(filtered_result)))
 
         # Update Spotify cache
         for release in filtered_result:

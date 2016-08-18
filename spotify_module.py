@@ -123,15 +123,13 @@ class Spotify():
                 albums from
         :param spotify_market: The Spotify market which the resulting albums
                 should be available in
-        :param with_appears_on: Decide if you want to receive the appearances too
+        :param with_appears_on: Decide if you want to receive the appearances too.
+                WARNING: Can lead to much longer execution time!
         :return: List of all albums, singles and sometimes appearances of an
                 artist in a market
         """
 
         limit = self.__user.NUMBER_OF_RELEASES_TO_LOOK_IN
-
-        # LOGGING
-        log("Get albums from %s" % (artist.name))
 
         albumResult = self.get_n_latest_albums_for_artist_by_type(
                 artist.id, market=spotify_market, type="album", limit=limit)

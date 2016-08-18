@@ -27,6 +27,7 @@ class TwitterUser():
     OAUTH_TOKEN = ""
     OAUTH_TOKEN_SECRET = ""
 
+
 # Path to last update file
 LAST_UPDATE_PATH = ".last_update_date"
 # Path to the twitter_cache file
