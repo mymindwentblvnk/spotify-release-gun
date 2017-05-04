@@ -5,3 +5,4 @@ __pycache__/
 .last_update_date
 playground.py
 .twitter_cache
+venv
