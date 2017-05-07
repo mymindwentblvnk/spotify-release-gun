@@ -1,4 +1,4 @@
-from spotify_notification_tweeter import SpotifyNotificationTweeter
+from spotify_release_tweeter import SpotifyReleaseTweeter
 
-# Process
-SpotifyNotificationTweeter().tweet_new_releases()
+if __name__ == '__main__':
+    SpotifyReleaseTweeter()
