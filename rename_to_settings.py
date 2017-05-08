@@ -15,6 +15,5 @@ TWITTER_APP_SECRET = '<twitter_app_secret>'
 TWITTER_OAUTH_TOKEN = '<twitter_oauth_token>'
 TWITTER_OAUTH_TOKEN_SECRET = '<twitter_oauth_token_secret>'
 
-LAST_UPDATE_PATH = '.last_update_date'
 TWEETED_IDS_CACHE_PATH = '.already_tweeted'
 DATE_FORMAT = "%Y-%m-%d"
