@@ -11,7 +11,6 @@ from twython import Twython
 
 
 class Tweeter(object):
-
     def __init__(self):
         self.twitter = Twython(settings.TWITTER_APP_KEY,
                                settings.TWITTER_APP_SECRET,
@@ -82,9 +81,7 @@ class SpotifyReleaseTweeter(object):
             scope='user-follow-read',
             client_id=settings.SPOTIFY_CLIENT_ID,
             client_secret=settings.SPOTIFY_CLIENT_SECRET,
-            redirect_uri=settings.SPOTIFY_REDIRECT_URI
-        )
-
+            redirect_uri=settings.SPOTIFY_REDIRECT_URI)
         self.spotify = spotipy.Spotify(auth=token)
         self.cache = AlreadyHandledCache(settings.TWEETED_IDS_CACHE_PATH)
         self.process()
