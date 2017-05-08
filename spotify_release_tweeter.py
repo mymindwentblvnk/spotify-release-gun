@@ -26,7 +26,6 @@ class Tweeter(object):
 
 
 class AlreadyHandledCache(object):
-
     def __init__(self, cache_path):
         self.cache_path = cache_path
         try:
@@ -34,6 +33,7 @@ class AlreadyHandledCache(object):
                 self.cache = pickle.load(out)
         except FileNotFoundError:
             self.cache = []
+        print("Loaded cache has {} entries.".format(len(self.cache)))
 
     def update(self, entries):
         self.cache.extend(entries)
