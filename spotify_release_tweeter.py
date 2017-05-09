@@ -161,3 +161,7 @@ class SpotifyReleaseTweeter(object):
                   and the script will run as promised in the next run. All releases until now will not be tweeted \
                   anymore.")
         print("Done ({}).".format(datetime.now()))
+
+
+if __name__ == '__main__':
+    SpotifyReleaseTweeter()
