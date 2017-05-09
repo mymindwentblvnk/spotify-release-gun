@@ -13,7 +13,7 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 2. Create virtualenv ```sudo virtualenv -p python3 venv```
 3. ```pip install -r requirements.txt```
 4. Rename `rename_to_settings.py` to `settings.py` and enter the missing API information.
-5. Run ```python main.py```
+5. Run ```python spotify_release_tweeter.py```
 
 ## TODO 
 1. Tests
