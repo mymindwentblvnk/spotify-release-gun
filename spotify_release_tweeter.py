@@ -156,5 +156,7 @@ class SpotifyReleaseTweeter(object):
             print("{} releases will be tweeted.".format(len(twitter_status_strings)))
             Tweeter().tweet_list(twitter_status_strings)
         else:
-            print("Zero tweets at first run, due to Twython API limit.")
+            print("Zero tweets at first run, due to Twython API limit (200 tweets a day). The cache is now initialized \
+                  and the script will run as promised in the next run. All releases until now will not be tweeted \
+                  anymore.")
         print("Done ({}).".format(datetime.now()))
