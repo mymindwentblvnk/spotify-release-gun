@@ -11,7 +11,7 @@ python:
     - "nightly" # currently points to 3.7-dev
 # command to install dependencies
 install: 
-    _ "pip install setuptools"
+    - "pip install setuptools"
     - "pip install -r requirements.txt"
     - "mv rename_to_settings.py settings.py"
 # command to run tests
