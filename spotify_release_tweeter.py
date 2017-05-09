@@ -3,7 +3,6 @@ from datetime import datetime
 import os
 
 import settings
-import util
 
 import spotipy
 import spotipy.util
@@ -85,7 +84,6 @@ class SpotifyReleaseTweeter(object):
         self.spotify = spotipy.Spotify(auth=token)
         self.cache = AlreadyHandledCache(settings.TWEETED_IDS_CACHE_PATH)
         self.process()
-        util.save_last_update_date()
 
     def get_ids_of_followed_artists(self):
         result = list()
