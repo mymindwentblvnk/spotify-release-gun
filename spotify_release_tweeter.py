@@ -140,7 +140,11 @@ class SpotifyReleaseTweeter(object):
                                                                 country=settings.SPOTIFY_MARKET, limit=limit)
                 appearances = [item_to_spotify_release(item) for item in result_appearances['items']]
                 artist_releases.extend(appearances)
-            result[artist_id] = self.filter_releases(artist_releases)
+
+            # Filter
+            filtered_releases = self.filter_releases(artist_releases)
+            if filtered_releases:
+                result[artist_id] = filtered_releases
         return result
 
     def process(self):
