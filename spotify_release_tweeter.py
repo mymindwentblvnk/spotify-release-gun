@@ -88,6 +88,7 @@ class SpotifyReleaseTweeter(object):
             client_secret=settings.SPOTIFY_CLIENT_SECRET,
             redirect_uri=settings.SPOTIFY_REDIRECT_URI)
         self.spotify = spotipy.Spotify(auth=token)
+        self.is_first_run = is_first_run()
         self.cache = AlreadyHandledCache(settings.TWEETED_IDS_CACHE_PATH)
         self.process()
 
@@ -152,7 +153,7 @@ class SpotifyReleaseTweeter(object):
         artist_ids = self.get_ids_of_followed_artists()
         releases_per_artist = self.get_releases_per_artist(artist_ids)
         twitter_status_strings = create_twitter_status_strings_from_releases_per_artist(releases_per_artist)
-        if not is_first_run():
+        if not self.is_first_run:
             print("{} releases will be tweeted.".format(len(twitter_status_strings)))
             Tweeter().tweet_list(twitter_status_strings)
         else:
