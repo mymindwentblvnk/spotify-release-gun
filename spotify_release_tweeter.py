@@ -25,10 +25,11 @@ class Tweeter(object):
 
 
 class AlreadyHandledCache(object):
+
     def __init__(self, cache_path):
         self.cache_path = cache_path
         try:
-            with open(self.cache_path, "rb") as out:
+            with open(cache_path, "rb") as out:
                 self.cache = pickle.load(out)
         except FileNotFoundError:
             self.cache = []
