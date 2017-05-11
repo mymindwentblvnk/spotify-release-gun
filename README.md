@@ -2,7 +2,7 @@
 Status](https://travis-ci.org/michael-123/SpotifyReleaseTweeter.svg?branch=master)](https://travis-ci.org/michael-123/SpotifyReleaseTweeter)
 
 # SpotifyReleaseTweeter
-A Python 3.5 script that tweets about new releases of artists that you follow.
+A Python tool that tweets about new releases of artists that you follow.
 
 ## What it does 
 1. Logs on to your Spotify account.
@@ -17,6 +17,3 @@ A Python 3.5 script that tweets about new releases of artists that you follow.
 3. ```pip install -r requirements.txt```
 4. Rename `rename_to_settings.py` to `settings.py` and enter the missing API information.
 5. Run ```python spotify_release_tweeter.py```
-
-## TODO 
-1. Tests
