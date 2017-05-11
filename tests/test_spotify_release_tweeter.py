@@ -148,3 +148,19 @@ class TestSpotifyReleaseTweeter(unittest.TestCase):
             "A_Name_31 - R_Name_31 https://play.spotify.com/album/R_ID_31",
         ]
         assert_that(set(twitter_status_strings), equal_to(set(expected_twitter_status_strings)))
+
+    def test_to_twitter_string_too_long(self):
+        test_id = '7D7gToSUwjOPdnpNdQHCKd'
+        artist_with_20_characters = [{'name': "12345678901234567890"}]
+        title_with_120_characters = "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+        r = SpotifyRelease(release_id=test_id, artists=artist_with_20_characters, title=title_with_120_characters)
+        assert_that(len(r.to_twitter_string()), is_(140))
+        assert_that(r.to_twitter_string(), equal_to("12345678901234567890 - 123456789012345678901234567890123456789012345678901234567890123 https://play.spotify.com/album/7D7gToSUwjOPdnpNdQHCKd"))
+
+    def test_to_twitter_string(self):
+        test_id = 'The_ID'
+        artist_with_20_characters = [{'name': "The Name"}]
+        title_with_120_characters = "The Album Title"
+        r = SpotifyRelease(release_id=test_id, artists=artist_with_20_characters, title=title_with_120_characters)
+        assert_that(len(r.to_twitter_string()), is_(64))
+        assert_that(r.to_twitter_string(), equal_to("The Name - The Album Title https://play.spotify.com/album/The_ID"))
