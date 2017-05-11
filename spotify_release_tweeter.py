@@ -25,10 +25,11 @@ class Tweeter(object):
 
 
 class AlreadyHandledCache(object):
+
     def __init__(self, cache_path):
         self.cache_path = cache_path
         try:
-            with open(self.cache_path, "rb") as out:
+            with open(cache_path, "rb") as out:
                 self.cache = pickle.load(out)
         except FileNotFoundError:
             self.cache = []
@@ -46,11 +47,10 @@ class AlreadyHandledCache(object):
 
 
 class SpotifyRelease(object):
-    def __init__(self, release_id, artists, title, release_type):
+    def __init__(self, release_id, artists, title):
         self.release_id = release_id
         self.url = "https://play.spotify.com/album/{}".format(self.release_id)
         self.title = title
-        self.release_type = release_type
         self.artist_name = artists[0]['name']
 
     def to_twitter_string(self):
@@ -74,8 +74,7 @@ def is_first_run():
 def item_to_spotify_release(item):
     return SpotifyRelease(release_id=item['id'],
                           artists=item['artists'],
-                          title=item['name'],
-                          release_type=item['album_type'])
+                          title=item['name'])
 
 
 class SpotifyReleaseTweeter(object):

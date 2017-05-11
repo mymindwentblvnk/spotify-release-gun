@@ -1,3 +1,6 @@
+[![Build
+Status](https://travis-ci.org/michael-123/SpotifyReleaseTweeter.svg?branch=master)](https://travis-ci.org/michael-123/SpotifyReleaseTweeter)
+
 # SpotifyReleaseTweeter
 A Python 3.5 script that tweets about new releases of artists that you follow.
 
