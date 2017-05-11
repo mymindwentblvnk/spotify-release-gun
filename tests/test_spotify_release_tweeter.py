@@ -1,14 +1,13 @@
 import unittest
-from mock import patch
-from mock import PropertyMock
+from mock import patch, PropertyMock
 from hamcrest import assert_that, equal_to, is_
 
 from twython import Twython
-import pickle
 import spotify_release_tweeter
 import spotipy.util
 
 from spotify_release_tweeter import SpotifyReleaseTweeter
+from spotify_release_tweeter import SpotifyRelease
 from spotify_release_tweeter import create_twitter_status_strings_from_releases_per_artist
 from spotify_release_tweeter import Tweeter
 
@@ -17,9 +16,9 @@ class TestSpotifyReleaseTweeter(unittest.TestCase):
     @patch.object(SpotifyReleaseTweeter, 'process')
     @patch.object(Tweeter, 'tweet_list')
     @patch.object(Twython, '__init__')
-    @patch.object(pickle, 'load')
-    @patch.object(pickle, 'dump')
+    @patch('spotify_release_tweeter.AlreadyHandledCache.cache', new_callable=PropertyMock, create=True)
     @patch.object(spotify_release_tweeter, 'is_first_run')
+    @patch.object(spotify_release_tweeter.AlreadyHandledCache, '__init__')
     @patch.object(spotify_release_tweeter.AlreadyHandledCache, 'update')
     @patch.object(spotipy.util, 'prompt_for_user_token')
     @patch.object(spotipy.Spotify, '__init__')
@@ -31,9 +30,9 @@ class TestSpotifyReleaseTweeter(unittest.TestCase):
                   spotipy_init,
                   spotipy_util_prompt_for_user_token,
                   cache_update,
+                  cache_init,
                   is_first_run,
-                  pickle_dump,
-                  pickle_load,
+                  self_cache,
                   twython_init,
                   twython_tweet_list,
                   process):
@@ -112,19 +111,43 @@ class TestSpotifyReleaseTweeter(unittest.TestCase):
         spotipy_init.return_value = None
         spotipy_util_prompt_for_user_token.return_value = None
         cache_update.return_value = None
-        is_first_run.return_value = None
-        pickle_dump.return_value = None
-        pickle_load.return_value = ['R_ID_32', 'R_ID_21', 'Not_Relevant_Cached_ID', 'R_ID_11', ]
+        cache_init.return_value = None
+        is_first_run.return_value = False
+        self_cache.return_value = ['R_ID_32', 'R_ID_21', 'Not_Relevant_Cached_ID', 'R_ID_11', ]
         twython_init.return_value = None
         twython_tweet_list.return_value = None
         process.return_value = None
 
         tweeter = SpotifyReleaseTweeter()
-
         artist_ids = tweeter.get_ids_of_followed_artists()
         assert_that(artist_ids, equal_to(['ID1', 'ID2', 'ID3']))
 
         releases_per_artist = tweeter.get_releases_per_artist(artist_ids)
-
+        assert_that(len(releases_per_artist), is_(3))
+        assert_that(len(releases_per_artist['ID1']), is_(1))
+        assert_that(releases_per_artist['ID1'][0].release_id, is_('R_ID_12'))
+        assert_that(releases_per_artist['ID1'][0].title, is_('R_Name_12'))
+        assert_that(releases_per_artist['ID1'][0].artist_name, is_('A_Name_12'))
+        assert_that(releases_per_artist['ID1'][0].release_type, is_('A_Type_12'))
+        assert_that(releases_per_artist['ID1'][0].url, is_("https://play.spotify.com/album/R_ID_12"))
+        assert_that(len(releases_per_artist['ID2']), is_(1))
+        assert_that(releases_per_artist['ID2'][0].release_id, is_('R_ID_22'))
+        assert_that(releases_per_artist['ID2'][0].title, is_('R_Name_22'))
+        assert_that(releases_per_artist['ID2'][0].artist_name, is_('A_Name_22'))
+        assert_that(releases_per_artist['ID2'][0].release_type, is_('A_Type_22'))
+        assert_that(releases_per_artist['ID2'][0].url, is_("https://play.spotify.com/album/R_ID_22"))
+        assert_that(len(releases_per_artist['ID3']), is_(1))
+        assert_that(releases_per_artist['ID3'][0].release_id, is_('R_ID_31'))
+        assert_that(releases_per_artist['ID3'][0].title, is_('R_Name_31'))
+        assert_that(releases_per_artist['ID3'][0].artist_name, is_('A_Name_31'))
+        assert_that(releases_per_artist['ID3'][0].release_type, is_('A_Type_31'))
+        assert_that(releases_per_artist['ID3'][0].url, is_("https://play.spotify.com/album/R_ID_31"))
 
         twitter_status_strings = create_twitter_status_strings_from_releases_per_artist(releases_per_artist)
+        assert_that(len(twitter_status_strings), is_(3))
+        expected_twitter_status_strings = [
+            "A_Name_12 - R_Name_12 https://play.spotify.com/album/R_ID_12",
+            "A_Name_22 - R_Name_22 https://play.spotify.com/album/R_ID_22",
+            "A_Name_31 - R_Name_31 https://play.spotify.com/album/R_ID_31",
+        ]
+        assert_that(set(twitter_status_strings), equal_to(set(expected_twitter_status_strings)))
