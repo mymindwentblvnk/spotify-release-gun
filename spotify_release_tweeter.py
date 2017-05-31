@@ -47,16 +47,18 @@ class AlreadyHandledCache(object):
 
 
 class SpotifyRelease(object):
-    def __init__(self, release_id, artists, title):
+    def __init__(self, release_id, artists, title, release_type):
         self.release_id = release_id
         self.url = "https://play.spotify.com/album/{}".format(self.release_id)
         self.title = title
         self.artist_name = artists[0]['name']
+        self.release_type = release_type
 
     def to_twitter_string(self):
-        characters_left = 136 - len(self.url) - len(self.artist_name)
+        pattern = "{} - {} ({}) {}"
+        characters_left = 140 - len(pattern.replace('{}', '')) - len(self.url) - len(self.artist_name) - len(self.release_type)
         title = self.title[:characters_left]
-        return "{} - {} {}".format(self.artist_name, title, self.url)
+        return pattern.format(self.artist_name, title, self.release_type, self.url)
 
 
 def create_twitter_status_strings_from_releases_per_artist(releases_per_artist):
@@ -71,10 +73,11 @@ def is_first_run():
     return not os.path.exists(settings.TWEETED_IDS_CACHE_PATH)
 
 
-def item_to_spotify_release(item):
+def item_to_spotify_release(item, release_type):
     return SpotifyRelease(release_id=item['id'],
                           artists=item['artists'],
-                          title=item['name'])
+                          title=item['name'],
+                          release_type=release_type)
 
 
 class SpotifyReleaseTweeter(object):
@@ -125,20 +128,20 @@ class SpotifyReleaseTweeter(object):
             # Albums
             result_albums = self.spotify.artist_albums(artist_id=artist_id, album_type='album',
                                                        country=settings.SPOTIFY_MARKET, limit=limit)
-            albums = [item_to_spotify_release(item) for item in result_albums['items']]
+            albums = [item_to_spotify_release(item, 'Album') for item in result_albums['items']]
             artist_releases.extend(albums)
 
             # Singles
             result_singles = self.spotify.artist_albums(artist_id=artist_id, album_type='single',
                                                         country=settings.SPOTIFY_MARKET, limit=limit)
-            singles = [item_to_spotify_release(item) for item in result_singles['items']]
+            singles = [item_to_spotify_release(item, 'Single') for item in result_singles['items']]
             artist_releases.extend(singles)
 
             # Appearances
             if with_appearance:
                 result_appearances = self.spotify.artist_albums(artist_id=artist_id, album_type='appears_on',
                                                                 country=settings.SPOTIFY_MARKET, limit=limit)
-                appearances = [item_to_spotify_release(item) for item in result_appearances['items']]
+                appearances = [item_to_spotify_release(item, 'Appearance') for item in result_appearances['items']]
                 artist_releases.extend(appearances)
 
             # Filter
