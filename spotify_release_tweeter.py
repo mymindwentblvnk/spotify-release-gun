@@ -7,9 +7,11 @@ import settings
 import spotipy
 import spotipy.util
 from twython import Twython
+from twython.exceptions import TwythonError
 
 
 class Tweeter(object):
+
     def __init__(self):
         self.twitter = Twython(settings.TWITTER_APP_KEY,
                                settings.TWITTER_APP_SECRET,
@@ -21,7 +23,10 @@ class Tweeter(object):
             self.tweet(status)
 
     def tweet(self, status):
-        self.twitter.update_status(status=status[:140])
+        try:
+            self.twitter.update_status(status=status[:140])
+        except TwythonError as e:
+            print("Could not tweet '{}'. Skipping. Error: {}".format(status, str(e)))
 
 
 class AlreadyHandledCache(object):
