@@ -8,6 +8,7 @@ import spotipy
 import spotipy.util
 from twython import Twython
 from twython.exceptions import TwythonError
+import requests.exceptions
 
 
 class Tweeter(object):
@@ -136,7 +137,7 @@ class SpotifyReleaseTweeter(object):
                                                            country=settings.SPOTIFY_MARKET, limit=limit)
                 albums = [item_to_spotify_release(item, 'Album') for item in result_albums['items']]
                 artist_releases.extend(albums)
-            except ConnectionError:
+            except requests.exceptions.ConnectionError:
                 print(("Could not establish connection while fetching "
                        "albums for artist with id {}. Skipping.").format(artist_id))
 
@@ -146,7 +147,7 @@ class SpotifyReleaseTweeter(object):
                                                             country=settings.SPOTIFY_MARKET, limit=limit)
                 singles = [item_to_spotify_release(item, 'Single') for item in result_singles['items']]
                 artist_releases.extend(singles)
-            except ConnectionError:
+            except requests.exceptions.ConnectionError:
                 print(("Could not establish connection while fetching "
                        "singles for artist with id {}. Skipping.").format(artist_id))
 
@@ -157,7 +158,7 @@ class SpotifyReleaseTweeter(object):
                                                                     country=settings.SPOTIFY_MARKET, limit=limit)
                     appearances = [item_to_spotify_release(item, 'Appearance') for item in result_appearances['items']]
                     artist_releases.extend(appearances)
-                except ConnectionError:
+                except requests.exceptions.ConnectionError:
                     print(("Could not establish connection while fetching "
                            "appearances for artist with id {}. Skipping.").format(artist_id))
 
