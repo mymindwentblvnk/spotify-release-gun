@@ -107,7 +107,6 @@ class SpotifyReleaseTweeter(object):
         self.spotify = spotipy.Spotify(auth=token)
         self.is_first_run = is_first_run()
         self.cache = AlreadyHandledCache(settings.TWEETED_IDS_CACHE_PATH)
-        self.process()
 
     def get_ids_of_followed_artists(self):
         result = list()
@@ -192,4 +191,5 @@ class SpotifyReleaseTweeter(object):
 
 
 if __name__ == '__main__':
-    SpotifyReleaseTweeter()
+    s = SpotifyReleaseTweeter()
+    s.process()
