@@ -1,4 +1,4 @@
-import pickle
+import json
 from datetime import datetime
 import os
 
@@ -33,18 +33,26 @@ class Tweeter(object):
 class AlreadyHandledCache(object):
 
     def __init__(self, cache_path):
+        self.cache_key = 'already_handled_ids'
         self.cache_path = cache_path
         try:
+            with open(cache_path, "r") as out:
+                self.cache = json.load(out)[self.cache_key]
+        except FileNotFoundError:
+            self.cache = list()
+        except UnicodeDecodeError:  # Cache still in pickle format
+            import pickle
             with open(cache_path, "rb") as out:
                 self.cache = pickle.load(out)
-        except FileNotFoundError:
-            self.cache = []
         print("Loaded cache has {} entries.".format(len(self.cache)))
 
     def update(self, entries):
         self.cache.extend(entries)
-        with open(self.cache_path, "wb") as out:
-            pickle.dump(self.cache, out)
+        with open(self.cache_path, "w") as out:
+            cache_dict = {
+                self.cache_key: self.cache
+            }
+            json.dump(cache_dict, out)
 
     def reduce(self, entries):
         reduced_list = list(set(entries) - set(self.cache))
