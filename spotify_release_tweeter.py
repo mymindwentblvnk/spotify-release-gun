@@ -4,11 +4,11 @@ import os
 
 import settings
 
-import spotipy
+from spotipy import Spotify
 import spotipy.util
 from twython import Twython
 from twython.exceptions import TwythonError
-import requests.exceptions
+from requests.exceptions import ConnectionError
 
 
 class Tweeter(object):
@@ -98,13 +98,12 @@ def item_to_spotify_release(item, release_type):
 class SpotifyReleaseTweeter(object):
 
     def __init__(self):
-        token = spotipy.util.prompt_for_user_token(
-            settings.SPOTIFY_USER_NAME,
-            scope='user-follow-read',
-            client_id=settings.SPOTIFY_CLIENT_ID,
-            client_secret=settings.SPOTIFY_CLIENT_SECRET,
-            redirect_uri=settings.SPOTIFY_REDIRECT_URI)
-        self.spotify = spotipy.Spotify(auth=token)
+        token = spotipy.util.prompt_for_user_token(settings.SPOTIFY_USER_NAME,
+                                      scope='user-follow-read',
+                                      client_id=settings.SPOTIFY_CLIENT_ID,
+                                      client_secret=settings.SPOTIFY_CLIENT_SECRET,
+                                      redirect_uri=settings.SPOTIFY_REDIRECT_URI)
+        self.spotify = Spotify(auth=token)
         self.is_first_run = is_first_run()
         self.cache = AlreadyHandledCache(settings.TWEETED_IDS_CACHE_PATH)
 
@@ -132,7 +131,9 @@ class SpotifyReleaseTweeter(object):
         filtered_releases = filter(lambda release: release.release_id in reduced_ids, artist_releases)
         return list(filtered_releases)
 
-    def get_releases_per_artist(self, artist_ids, with_appearance=False, limit=settings.LAST_N_RELEASES):
+    def get_releases_per_artist(self, artist_ids, limit=settings.LAST_N_RELEASES):
+        ALBUM = 'Album'
+        SINGLE = 'Single'
         result = dict()
 
         for artist_id in artist_ids:
@@ -140,34 +141,23 @@ class SpotifyReleaseTweeter(object):
 
             # Albums
             try:
-                result_albums = self.spotify.artist_albums(artist_id=artist_id, album_type='album',
+                result_albums = self.spotify.artist_albums(artist_id=artist_id, album_type=ALBUM,
                                                            country=settings.SPOTIFY_MARKET, limit=limit)
-                albums = [item_to_spotify_release(item, 'Album') for item in result_albums['items']]
+                albums = [item_to_spotify_release(item, ALBUM) for item in result_albums['items']]
                 artist_releases.extend(albums)
-            except requests.exceptions.ConnectionError:
+            except ConnectionError:
                 print(("Could not establish connection while fetching "
                        "albums for artist with id {}. Skipping.").format(artist_id))
 
             # Singles
             try:
-                result_singles = self.spotify.artist_albums(artist_id=artist_id, album_type='single',
+                result_singles = self.spotify.artist_albums(artist_id=artist_id, album_type=SINGLE,
                                                             country=settings.SPOTIFY_MARKET, limit=limit)
-                singles = [item_to_spotify_release(item, 'Single') for item in result_singles['items']]
+                singles = [item_to_spotify_release(item, SINGLE) for item in result_singles['items']]
                 artist_releases.extend(singles)
-            except requests.exceptions.ConnectionError:
+            except ConnectionError:
                 print(("Could not establish connection while fetching "
                        "singles for artist with id {}. Skipping.").format(artist_id))
-
-            # Appearances
-            if with_appearance:
-                try:
-                    result_appearances = self.spotify.artist_albums(artist_id=artist_id, album_type='appears_on',
-                                                                    country=settings.SPOTIFY_MARKET, limit=limit)
-                    appearances = [item_to_spotify_release(item, 'Appearance') for item in result_appearances['items']]
-                    artist_releases.extend(appearances)
-                except requests.exceptions.ConnectionError:
-                    print(("Could not establish connection while fetching "
-                           "appearances for artist with id {}. Skipping.").format(artist_id))
 
             # Filter
             filtered_releases = self.filter_releases(artist_releases)

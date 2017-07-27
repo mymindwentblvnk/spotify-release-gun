@@ -5,10 +5,10 @@ python:
     - "3.5"
     - "3.6"
 # command to install dependencies
-install: 
+install:
     - "pip install --upgrade setuptools"
     - "pip install --upgrade pip"
     - "mv rename_to_settings.py settings.py"
     - "pip install -r requirements.txt"
 # command to run tests
-script: python -m unittest tests
+script: make test
