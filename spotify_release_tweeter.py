@@ -5,7 +5,7 @@ import os
 import settings
 
 from spotipy import Spotify
-from spotipy.util import prompt_for_user_token
+import spotipy.util
 from twython import Twython
 from twython.exceptions import TwythonError
 from requests.exceptions import ConnectionError
@@ -98,7 +98,7 @@ def item_to_spotify_release(item, release_type):
 class SpotifyReleaseTweeter(object):
 
     def __init__(self):
-        token = prompt_for_user_token(settings.SPOTIFY_USER_NAME,
+        token = spotipy.util.prompt_for_user_token(settings.SPOTIFY_USER_NAME,
                                       scope='user-follow-read',
                                       client_id=settings.SPOTIFY_CLIENT_ID,
                                       client_secret=settings.SPOTIFY_CLIENT_SECRET,
