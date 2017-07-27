@@ -4,11 +4,11 @@ import os
 
 import settings
 
-import spotipy
-import spotipy.util
+from spotipy import Spotify
+from spotipy.util import prompt_for_user_token
 from twython import Twython
 from twython.exceptions import TwythonError
-import requests.exceptions
+from requests.exceptions import ConnectionError
 
 
 class Tweeter(object):
@@ -98,13 +98,12 @@ def item_to_spotify_release(item, release_type):
 class SpotifyReleaseTweeter(object):
 
     def __init__(self):
-        token = spotipy.util.prompt_for_user_token(
-            settings.SPOTIFY_USER_NAME,
-            scope='user-follow-read',
-            client_id=settings.SPOTIFY_CLIENT_ID,
-            client_secret=settings.SPOTIFY_CLIENT_SECRET,
-            redirect_uri=settings.SPOTIFY_REDIRECT_URI)
-        self.spotify = spotipy.Spotify(auth=token)
+        token = prompt_for_user_token(settings.SPOTIFY_USER_NAME,
+                                      scope='user-follow-read',
+                                      client_id=settings.SPOTIFY_CLIENT_ID,
+                                      client_secret=settings.SPOTIFY_CLIENT_SECRET,
+                                      redirect_uri=settings.SPOTIFY_REDIRECT_URI)
+        self.spotify = Spotify(auth=token)
         self.is_first_run = is_first_run()
         self.cache = AlreadyHandledCache(settings.TWEETED_IDS_CACHE_PATH)
 
@@ -144,7 +143,7 @@ class SpotifyReleaseTweeter(object):
                                                            country=settings.SPOTIFY_MARKET, limit=limit)
                 albums = [item_to_spotify_release(item, 'Album') for item in result_albums['items']]
                 artist_releases.extend(albums)
-            except requests.exceptions.ConnectionError:
+            except ConnectionError:
                 print(("Could not establish connection while fetching "
                        "albums for artist with id {}. Skipping.").format(artist_id))
 
@@ -154,7 +153,7 @@ class SpotifyReleaseTweeter(object):
                                                             country=settings.SPOTIFY_MARKET, limit=limit)
                 singles = [item_to_spotify_release(item, 'Single') for item in result_singles['items']]
                 artist_releases.extend(singles)
-            except requests.exceptions.ConnectionError:
+            except ConnectionError:
                 print(("Could not establish connection while fetching "
                        "singles for artist with id {}. Skipping.").format(artist_id))
 
