@@ -131,7 +131,7 @@ class SpotifyReleaseTweeter(object):
         filtered_releases = filter(lambda release: release.release_id in reduced_ids, artist_releases)
         return list(filtered_releases)
 
-    def get_releases_per_artist(self, artist_ids, with_appearance=False, limit=settings.LAST_N_RELEASES):
+    def get_releases_per_artist(self, artist_ids, limit=settings.LAST_N_RELEASES):
         ALBUM = 'Album'
         SINGLE = 'Single'
         result = dict()
