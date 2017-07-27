@@ -159,17 +159,6 @@ class SpotifyReleaseTweeter(object):
                 print(("Could not establish connection while fetching "
                        "singles for artist with id {}. Skipping.").format(artist_id))
 
-            # Appearances
-            if with_appearance:
-                try:
-                    result_appearances = self.spotify.artist_albums(artist_id=artist_id, album_type='appears_on',
-                                                                    country=settings.SPOTIFY_MARKET, limit=limit)
-                    appearances = [item_to_spotify_release(item, 'Appearance') for item in result_appearances['items']]
-                    artist_releases.extend(appearances)
-                except requests.exceptions.ConnectionError:
-                    print(("Could not establish connection while fetching "
-                           "appearances for artist with id {}. Skipping.").format(artist_id))
-
             # Filter
             filtered_releases = self.filter_releases(artist_releases)
             if filtered_releases:
