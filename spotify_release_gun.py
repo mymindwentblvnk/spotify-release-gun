@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 from datetime import datetime
 import os
 
@@ -23,7 +24,7 @@ class AlreadyHandledCache(object):
             import pickle
             with open(cache_path, "rb") as out:
                 self.cache = pickle.load(out)
-        print("Loaded cache has {} entries.".format(len(self.cache)))
+        print("> Loaded cache has {} entries.".format(len(self.cache)))
 
     def update(self, entries):
         self.cache.extend(entries)
@@ -63,8 +64,8 @@ def create_twitter_status_strings_from_releases_per_artist(releases_per_artist):
     return result
 
 
-def is_first_run():
-    return not os.path.exists(settings.TWEETED_IDS_CACHE_PATH)
+def is_first_run(cache_path):
+    return not os.path.exists(cache_path)
 
 
 def item_to_spotify_release(item, release_type):
@@ -74,17 +75,19 @@ def item_to_spotify_release(item, release_type):
                           release_type=release_type)
 
 
-class SpotifyReleaseTweeter(object):
+class SpotifyReleaseGun(object):
 
-    def __init__(self):
-        token = spotipy.util.prompt_for_user_token(settings.SPOTIFY_USER_NAME,
-                                      scope='user-follow-read',
-                                      client_id=settings.SPOTIFY_CLIENT_ID,
-                                      client_secret=settings.SPOTIFY_CLIENT_SECRET,
-                                      redirect_uri=settings.SPOTIFY_REDIRECT_URI)
+    def __init__(self, spotify_user_data):
+        self.user_name = spotify_user_data['user_name']
+        token = spotipy.util.prompt_for_user_token(self.user_name,
+                                                   scope='user-follow-read',
+                                                   client_id=spotify_user_data['client_id'],
+                                                   client_secret=spotify_user_data['client_secret'],
+                                                   redirect_uri=spotify_user_data['redirect_uri'])
         self.spotify = Spotify(auth=token)
-        self.is_first_run = is_first_run()
-        self.cache = AlreadyHandledCache(settings.TWEETED_IDS_CACHE_PATH)
+        self.cache_path = settings.NOTIFIED_IDS_CACHE_PATH_PATTERN.format(self.user_name)
+        self.is_first_run = is_first_run(self.cache_path)
+        self.cache = AlreadyHandledCache(self.cache_path)
 
     def get_ids_of_followed_artists(self):
         result = list()
@@ -101,7 +104,7 @@ class SpotifyReleaseTweeter(object):
                 last_artist_id = artist['id']
                 result.append(artist['id'])
 
-        print("{} followed artists found.".format(len(result)))
+        print("> {} followed artists found.".format(len(result)))
         return result
 
     def filter_releases(self, artist_releases):
@@ -120,23 +123,33 @@ class SpotifyReleaseTweeter(object):
 
             # Albums
             try:
-                result_albums = self.spotify.artist_albums(artist_id=artist_id, album_type=ALBUM,
-                                                           country=settings.SPOTIFY_MARKET, limit=limit)
+                result_albums = self.spotify.artist_albums(artist_id=artist_id,
+                                                           album_type=ALBUM,
+                                                           country=settings.SPOTIFY_MARKET,
+                                                           limit=limit)
                 albums = [item_to_spotify_release(item, ALBUM) for item in result_albums['items']]
                 artist_releases.extend(albums)
             except ConnectionError:
-                print(("Could not establish connection while fetching "
+                print(("> Could not establish connection while fetching "
                        "albums for artist with id {}. Skipping.").format(artist_id))
+            except JSONDecodeError:
+                print(("> Could not decode JSON response "
+                       "of artist with id {}. Skipping.").format(artist_id))
 
             # Singles
             try:
-                result_singles = self.spotify.artist_albums(artist_id=artist_id, album_type=SINGLE,
-                                                            country=settings.SPOTIFY_MARKET, limit=limit)
+                result_singles = self.spotify.artist_albums(artist_id=artist_id,
+                                                            album_type=SINGLE,
+                                                            country=settings.SPOTIFY_MARKET,
+                                                            limit=limit)
                 singles = [item_to_spotify_release(item, SINGLE) for item in result_singles['items']]
                 artist_releases.extend(singles)
             except ConnectionError:
-                print(("Could not establish connection while fetching "
+                print(("> Could not establish connection while fetching "
                        "singles for artist with id {}. Skipping.").format(artist_id))
+            except JSONDecodeError:
+                print(("> Could not decode JSON response "
+                       "of artist with id {}. Skipping.").format(artist_id))
 
             # Filter
             filtered_releases = self.filter_releases(artist_releases)
@@ -145,20 +158,22 @@ class SpotifyReleaseTweeter(object):
         return result
 
     def process(self):
-        print("Start ({}).".format(datetime.now()))
+        print("> Start ({}).".format(datetime.now()))
         artist_ids = self.get_ids_of_followed_artists()
         releases_per_artist = self.get_releases_per_artist(artist_ids)
         twitter_status_strings = create_twitter_status_strings_from_releases_per_artist(releases_per_artist)
         if not self.is_first_run:
-            print("{} releases will be tweeted.".format(len(twitter_status_strings)))
+            print("> {} releases will be tweeted.".format(len(twitter_status_strings)))
             # notify
         else:
-            print(("Zero tweets at first run, due to Twython API limit (200 tweets a day). "
+            print(("Zero notifications at first run. "
                    "The cache is now initialized and the script will run as promised in the "
                    "next run. All releases until now will not be tweeted anymore."))
-        print("Done ({}).".format(datetime.now()))
+        print("> Done ({}).".format(datetime.now()))
 
 
 if __name__ == '__main__':
-    s = SpotifyReleaseTweeter()
-    s.process()
+    for user_name, user_data in settings.SPOTIFY_USERS.items():
+        print("Processing Spotify user", user_name)
+        s = SpotifyReleaseGun(user_data)
+        s.process()
