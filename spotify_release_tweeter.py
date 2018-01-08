@@ -6,28 +6,7 @@ import settings
 
 from spotipy import Spotify
 import spotipy.util
-from twython import Twython
-from twython.exceptions import TwythonError
 from requests.exceptions import ConnectionError
-
-
-class Tweeter(object):
-
-    def __init__(self):
-        self.twitter = Twython(settings.TWITTER_APP_KEY,
-                               settings.TWITTER_APP_SECRET,
-                               settings.TWITTER_OAUTH_TOKEN,
-                               settings.TWITTER_OAUTH_TOKEN_SECRET)
-
-    def tweet_list(self, status_list):
-        for status in status_list:
-            self.tweet(status)
-
-    def tweet(self, status):
-        try:
-            self.twitter.update_status(status=status[:140])
-        except TwythonError as e:
-            print("Could not tweet '{}'. Skipping. Error: {}".format(status, str(e)))
 
 
 class AlreadyHandledCache(object):
@@ -172,7 +151,7 @@ class SpotifyReleaseTweeter(object):
         twitter_status_strings = create_twitter_status_strings_from_releases_per_artist(releases_per_artist)
         if not self.is_first_run:
             print("{} releases will be tweeted.".format(len(twitter_status_strings)))
-            Tweeter().tweet_list(twitter_status_strings)
+            # notify
         else:
             print(("Zero tweets at first run, due to Twython API limit (200 tweets a day). "
                    "The cache is now initialized and the script will run as promised in the "
