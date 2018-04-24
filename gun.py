@@ -58,12 +58,13 @@ def send_to_really_simple_rss_server(releases_per_artist, user_name):
 
 
 def send_to_slack(releases_per_artist, user_name):
-    pattern = '{} - {} [{} ({})]: {}'
+    pattern = '[{}] {} - {} [{} ({})]: {}'
     messages = []
     for artist_id in releases_per_artist:
         for release in releases_per_artist[artist_id]:
             artists = ', '.join(release.artist_names)
-            message = pattern.format(artists,
+            message = pattern.format(user_name,
+                                     artists,
                                      release.title,
                                      release.release_type,
                                      release.release_date,
