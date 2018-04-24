@@ -107,10 +107,14 @@ class SpotifyReleaseGun(object):
         while True:
             artist_result = self.spotify.\
                 current_user_followed_artists(50, last_artist_id)
-            if artist_result['artists']['items']:
-                for artist in artist_result['artists']['items']:
-                    last_artist_id = artist['id']
-                    result.append(artist['id'])
+            artists = artist_result['artists']['items']
+
+            if not artists:
+                break
+
+            for artist in artists:
+                last_artist_id = artist['id']
+                result.append(artist['id'])
         return result
 
     def filter_releases(self, artist_releases):
