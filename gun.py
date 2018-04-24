@@ -154,7 +154,7 @@ class SpotifyReleaseGun(object):
                 artist_releases.extend(singles)
             except ConnectionError:
                 print(("> Could not establish connection while "
-                       "fetching singles for artist with id {}. "
+                       "fetching releases for artist with id {}. "
                        "Skipping.").format(artist_id))
             except JSONDecodeError:
                 print(("> Could not decode JSON response "
