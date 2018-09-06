@@ -12,7 +12,7 @@ SPOTIFY_USERS = {
     # ...
 }
 
-CACHE_PATH_PATTERN = '.already-notified-{}'
+CACHE_PATH_PATTERN = 'already_notified_files/.already-notified-{}'
 
 
 REALLY_SIMPLE_RSS_SERVER_URL = '<rsrs_url>/feed/spotify_releases/{user_name}'
