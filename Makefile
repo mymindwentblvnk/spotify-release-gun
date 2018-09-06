@@ -1,5 +1,15 @@
-venv:
-	virtualenv -p python3 venv; . venv/bin/activate; pip install -r requirements.txt; deactivate
+docker-build:
+	make docker-clean
+	sudo docker build -t gun-image --no-cache=true .
 
-run:
-	. venv/bin/activate; python gun.py; deactivate
+docker-clean:
+	-sudo docker rm -f gun-container;
+	-sudo docker rmi gun-image
+
+docker-run:
+	sudo docker run --rm -a stdout -a stderr --name gun-container -v $(shell pwd):/gun -i gun-image /bin/bash -c "python gun.py"
+
+docker-build-and-run:
+	make docker-build
+	make docker-run
+	make docker-clean
