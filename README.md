@@ -12,6 +12,5 @@ A Python tool that notifies about new releases of artists that you follow.
 
 ## If you want to use it
 1. Clone repository.
-2. Create virtualenv ```make venv```
 4. Rename `rename_to_settings.py` to `settings.py` and enter the missing information.
-5. Run ```make run```
+5. Run ```make docker-build-and-run```
