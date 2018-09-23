@@ -41,6 +41,27 @@ def is_first_run(cache_path):
     return not os.path.exists(cache_path)
 
 
+def releases_per_artist_to_messages(releases_per_artist, user_name):
+    pattern = '[{}] {} - {} [{} ({})]: {}'
+    messages = []
+    for artist_id in releases_per_artist:
+        for release in releases_per_artist[artist_id]:
+            artists = ', '.join(release.artist_names)
+            messages.append(pattern.format(user_name,
+                                           artists,
+                                           release.title,
+                                           release.release_type,
+                                           release.release_date,
+                                           release.url))
+    return messages
+
+def send_to_console(releases_per_artist, user_name):
+    messages = releases_per_artist_to_messages(releases_per_artist, user_name)
+    print(">", len(messages), "new releases found for", user_name)
+    for message in messages:
+        print(">>", message)
+
+
 def send_to_really_simple_rss_server(releases_per_artist, user_name):
     url = settings.REALLY_SIMPLE_RSS_SERVER_URL.format(user_name=user_name)
     for artist_id in releases_per_artist:
@@ -58,18 +79,7 @@ def send_to_really_simple_rss_server(releases_per_artist, user_name):
 
 
 def send_to_slack(releases_per_artist, user_name):
-    pattern = '[{}] {} - {} [{} ({})]: {}'
-    messages = []
-    for artist_id in releases_per_artist:
-        for release in releases_per_artist[artist_id]:
-            artists = ', '.join(release.artist_names)
-            message = pattern.format(user_name,
-                                     artists,
-                                     release.title,
-                                     release.release_type,
-                                     release.release_date,
-                                     release.url)
-            messages.append(message)
+    messages = releases_per_artist_to_messages(releases_per_artist, user_name)
     requests.post(settings.SLACK_URL, json={'text': '\n'.join(messages)})
     return messages
 
@@ -171,9 +181,12 @@ class SpotifyReleaseGun(object):
         releases_per_artist = self.get_releases_per_artist(artist_ids)
         return releases_per_artist
 
-    def process(self):
+    def process(self, to_console=True):
         print("> Start ({}).".format(datetime.now()))
         releases = self.get_releases_of_artists()
+
+        if to_console:
+            send_to_console(releases, self.user_name)
         if settings.REALLY_SIMPLE_RSS_SERVER_URL:
             send_to_really_simple_rss_server(releases, self.user_name)
         if settings.SLACK_URL:
