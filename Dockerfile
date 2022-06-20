@@ -1,4 +1,4 @@
-FROM python:3.5-jessie
+FROM python:latest
 ENV PYTHONUNBUFFERED 1
 ENV WORKDIR=/gun
 RUN mkdir -p ${WORKDIR}

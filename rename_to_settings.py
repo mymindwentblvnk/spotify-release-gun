@@ -15,5 +15,5 @@ SPOTIFY_USERS = {
 CACHE_PATH_PATTERN = '.already-notified-{}'
 
 
-REALLY_SIMPLE_RSS_SERVER_URL = '<rsrs_url>/feed/spotify_releases/{user_name}'
-SLACK_URL = '<slack_webhook_url>'
+REALLY_SIMPLE_RSS_SERVER_URL = None
+SLACK_URL = None
